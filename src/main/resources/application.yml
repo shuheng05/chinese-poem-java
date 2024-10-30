@@ -1,0 +1,50 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: chinese-poem
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/chinese_poems?useSSL=false&autoReconnect=true&failOverReadOnly=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
+    username: root
+    password: szh666
+    type: com.alibaba.druid.pool.DruidDataSource
+
+  mail:
+    username: 3070735368@qq.com
+    password: wizqkaelnphrdgdb
+    host: smtp.qq.com
+    port: 465
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          socketFactory:
+            port: 465
+            class: javax.net.ssl.SSLSocketFactory
+            fallback: false
+  ai:
+    openai:
+      base-url: https://api.xty.app
+      api-key: sk-udFqBatjMgxnqj4Y42D482D8C9A64e1a943a89653d2e9949
+      chat:
+        options:
+          model: gpt-3.5-turbo
+
+  devtools:
+    restart:
+      enabled: true
+
+  elasticsearch:
+    uris: http://127.0.0.1:9201
+
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

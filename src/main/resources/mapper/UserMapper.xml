@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sweet.user.mapper.UserMapper">
+    <insert id="insert">
+        insert into user(id, username, email, password) values(#{id}, #{username}, #{email}, #{password})
+    </insert>
+    <select id="getUserByEmail" resultType="com.sweet.user.protocol.po.User">
+        select * from user where email = #{email}
+    </select>
+    <select id="getUserByUsername" resultType="com.sweet.user.protocol.po.User">
+        select * from user where username = #{username}
+    </select>
+    <select id="getFavoritePoemsByUserId" resultType="com.sweet.user.protocol.dto.UserFavoritePoemDTO">
+        select user_favorites_poem.poem_id as poemId, poems.title as poemTitle,
+               authors.name as poemAuthor, poems.content as poemContent
+        from user_favorites_poem
+                 left join poems on user_favorites_poem.poem_id = poems.id
+                 left join authors on poems.author_id = authors.id
+        where user_favorites_poem.user_id = #{userId}
+        limit #{from}, #{size}
+    </select>
+    <select id="getUserInfoById" resultType="com.sweet.user.protocol.vo.UserInfoVO">
+        select username,email,avatar,address
+        from user where id = #{userId}
+    </select>
+
+
+</mapper>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sweet.poem.mapper.PoemMapper">
+    <insert id="insertToUserLikePoem">
+        insert into user_like_poem(user_id, poem_id)
+        values(#{userId}, #{poemId})
+    </insert>
+    <insert id="insertToUserDislikePoem">
+        insert into user_dislike_poem(user_id, poem_id)
+        values(#{userId}, #{poemId})
+    </insert>
+    <insert id="insertToUserFavoritesPoem">
+        insert into user_favorites_poem(user_id, poem_id)
+        values(#{userId}, #{poemId})
+    </insert>
+    <update id="updateLikeCountById">
+        update poems
+        set likes_count = #{likeCount}
+        where id = #{poemId}
+    </update>
+    <update id="updateDislikeCountById">
+        update poems
+        set dislikes_count = #{dislikeCount}
+        where id = #{poemId}
+    </update>
+    <update id="updateFavoriteCountById">
+        update poems
+        set favorites_count = #{favoriteCount}
+        where id = #{poemId}
+    </update>
+    <delete id="deleteFromUserlikePoem">
+        delete from user_like_poem
+        where user_id = #{userId} and poem_id = #{poemId}
+    </delete>
+    <delete id="deleteFromUserDislikePoem">
+        delete from user_dislike_poem
+        where user_id = #{userId} and poem_id = #{poemId}
+    </delete>
+    <delete id="deleteFromUserFavoritesPoem">
+        delete from user_favorites_poem
+        where user_id = #{userId} and poem_id = #{poemId}
+    </delete>
+
+    <select id="selectPage" resultType="com.sweet.poem.protocol.dto.PoemDto">
+        select
+        poems.id,
+        poems.title,
+        poems.content,
+        authors.name as author,
+        dynasties.name as dynasty,
+        poems.annotation,
+        poems.translation,
+        poems.appreciate,
+        poems.mp4_url as mp4Url,
+        poems.form,
+        GROUP_CONCAT(tags.tag_name) AS type
+        from poems
+        left join authors on poems.author_id = authors.id
+        left join dynasties on authors.dynasty_id = dynasties.id
+        left join poem_tags on poems.id = poem_tags.poem_id
+        left join tags on poem_tags.tag_id = tags.id
+
+        <where>
+            <if test="type != null and type != ''">
+                and tags.tag_name = #{type}
+            </if>
+            <if test="author != null and author != ''">
+                and authors.name = #{author}
+            </if>
+
+            <if test="dynasty != null and dynasty != ''">
+                and dynasties.name = #{dynasty}
+            </if>
+            <if test="form != null and form != ''">
+                and poems.form = #{form}
+            </if>
+        </where>
+        GROUP BY poems.id
+        limit #{start}, #{count}
+    </select>
+    <select id="selectFromUserLikePoem" resultType="com.sweet.poem.protocol.po.UserLikePoemPO">
+        insert into user_like_poem(user_id, poem_id)
+        values (#{userId}, #{poemId})
+    </select>
+    <select id="selectFromUserDisikePoem" resultType="com.sweet.poem.protocol.po.UserDislikePoemPO">
+        insert into user_dislike_poem(user_id, poem_id)
+        values (#{userId}, #{poemId})
+    </select>
+</mapper>

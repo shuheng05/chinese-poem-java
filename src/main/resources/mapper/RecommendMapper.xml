@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sweet.recommend.mapper.RecommendMapper">
+    <select id="getTenRecommendPoems" resultType="com.sweet.recommend.protocol.vo.CommonRecommendPoemsVO">
+        SELECT poems.title as poemTitle,
+               authors.name as poemAuthor
+        FROM poems
+                 LEFT JOIN authors ON poems.author_id = authors.id
+        ORDER BY (GREATEST(poems.likes_count - poems.dislikes_count, 0) * 0.4 + poems.favorites_count * 0.6) DESC
+        LIMIT 0, 10;
+    </select>
+    <select id="getUserLikeTopThreeAuthor" resultType="com.sweet.recommend.protocol.dto.UserLikeTopThreeAuthor">
+        select authors.name as authorName, count(*) as authorCount
+        from poems
+                 left join authors on poems.author_id = authors.id
+                 left join user_favorites_poem on poems.id = user_favorites_poem.poem_id
+                 left join user_like_poem on poems.id = user_like_poem.poem_id
+        where user_favorites_poem.user_id = #{userId}
+           or user_like_poem.user_id = #{userId}
+        group by authors.name
+        order by authorCount desc
+        limit 0,3;
+    </select>
+    <select id="getUserLikeTopThreeType" resultType="com.sweet.recommend.protocol.dto.UserLikeTopThreeType">
+        select tags.tag_name as poemType, count(*) as typeCount
+        from poems
+                 left join user_favorites_poem on poems.id = user_favorites_poem.poem_id
+                 left join user_like_poem on poems.id = user_like_poem.poem_id
+                 left join poem_tags on poems.id = poem_tags.poem_id
+                 left join tags on poem_tags.tag_id = tags.id
+        where user_favorites_poem.user_id = #{userId}
+           or user_like_poem.user_id = #{userId}
+        group by tags.tag_name
+        order by typeCount desc
+        limit 0,3;
+    </select>
+    <select id="getUserLikeTopThreeForm" resultType="com.sweet.recommend.protocol.dto.UserLikeTopThreeForm">
+        select poems.form as poemForm, count(*) as formCount
+        from poems
+                 left join user_favorites_poem on poems.id = user_favorites_poem.poem_id
+                 left join user_like_poem on poems.id = user_like_poem.poem_id
+        where user_favorites_poem.user_id = #{userId}
+           or user_like_poem.user_id = #{userId}
+        group by poems.form
+        order by formCount desc
+        limit 0,3;
+    </select>
+
+</mapper>
